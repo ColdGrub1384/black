@@ -56,14 +56,17 @@ def find_project_root(srcs: Sequence[str]) -> Path:
     )
 
     for directory in (common_base, *common_base.parents):
-        if (directory / ".git").exists():
-            return directory
+        try:
+            if (directory / ".git").exists():
+                return directory
 
-        if (directory / ".hg").is_dir():
-            return directory
+            if (directory / ".hg").is_dir():
+                return directory
 
-        if (directory / "pyproject.toml").is_file():
-            return directory
+            if (directory / "pyproject.toml").is_file():
+                return directory
+        except PermissionError:
+            continue
 
     return directory
 
